@@ -22,7 +22,7 @@ std::vector<int> sieve_Er()
 			}
 		}
 	return sieve;
-};
+}
 
 void prime_count(std::vector<int>& S, int start, int end) 
 {
@@ -44,7 +44,7 @@ void prime_count(std::vector<int>& S, int start, int end)
 		}			
 	}
 	std::cout<<count<<'\n';
-};
+}
 
 int main(int argc, char* argv[])
 {
