@@ -3,7 +3,7 @@
 #include <vector>
 #include <math.h>
 
-const int n = 100001;
+const int n = 100000;
 
 std::vector<int> sieve_Er() 
 {
@@ -13,7 +13,7 @@ std::vector<int> sieve_Er()
 	for (int i = 2; i * i < n + 1; i++)
 		if (sieve[i])
 		{
-			if (i * i <= n)
+			if (i * i < n + 1)
 			{
 				for (int j = i * i; j < n + 1; j += i)
 				{
