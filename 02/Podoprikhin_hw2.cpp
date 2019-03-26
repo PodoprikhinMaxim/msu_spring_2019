@@ -23,10 +23,10 @@ struct token
     token(token_value T_ = END, char operation_ = 0, int64_t number_ = 0) : T(T_), operation(operation_), number(number_) {}
 };
 
-token curr_tok(std::istream* input)
+token curr_tok(std::istream& input)
 {
 	char c;
-	while(input->get(c))
+	while(input.get(c))
 	{
 		if(c == ' ')
 			continue;
@@ -46,22 +46,22 @@ token curr_tok(std::istream* input)
 	return token(END);
 }
 
-int64_t prim(std::istream* input)
+int64_t prim(std::istream& input)
 {
 	token c = curr_tok(input);
 	if(c.T == ADD)
 		return prim(input);
-	else if(c.T == SUB)
+	if(c.T == SUB)
 		return -prim(input);
-	else if(c.T == NUM)
+	if(c.T == NUM)
 		return c.number;
-	else if(c.T == ERR)
-		throw std::invalid_argument("error");	 
-	else if(c.T == END)
+	if(c.T == ERR)
+		throw std::invalid_argument("error");
+	if(c.T == END)
 		throw std::invalid_argument("error");
 }
 
-int64_t term(std::istream* input) 
+int64_t term(std::istream& input) 
 {
 	int64_t res = prim(input);
 	while (true) 
@@ -85,7 +85,7 @@ int64_t term(std::istream* input)
 			case ERR:
 				throw std::invalid_argument("error");
 			default:
-				input->putback(c.operation);
+				input.putback(c.operation);
 				return res;
 		}
 	}
@@ -125,7 +125,7 @@ int64_t term(std::istream* input)
 	}
 }*/
 
-int64_t expr(std::istream* input) 
+int64_t expr(std::istream& input) 
 {
 	int64_t res = term(input);
 	while (true) 
@@ -177,13 +177,12 @@ int64_t expr(std::istream* input)
 
 int main(int argc, char* argv[]) 
 {
-	std::istream* expression = nullptr;
 	if (argc != 2) 
 	{
 		std::cout << "error" << std::endl;
 		return 1;
 	}
-	expression = new std::istringstream(argv[1]);
+	auto expression = std::istringstream(argv[1]);
 	try
 	{
 		std::cout << expr(expression) << std::endl;
@@ -195,5 +194,10 @@ int main(int argc, char* argv[])
 	}
 	return 0;
 }
+
+
+
+
+
 
 
