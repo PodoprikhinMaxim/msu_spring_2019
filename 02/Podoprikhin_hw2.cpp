@@ -5,13 +5,13 @@
 
 enum token_value
 {
-    ERR,
-    NUM,
-    END,
     ADD,
     SUB,
     MUL,
-    DIV
+    DIV,
+    NUM,
+    ERR,
+    END
 };
 
 struct token 
@@ -177,12 +177,13 @@ int64_t expr(std::istream* input)
 
 int main(int argc, char* argv[]) 
 {
+	std::istream* expression = nullptr;
 	if (argc != 2) 
 	{
 		std::cout << "error" << std::endl;
 		return 1;
 	}
-	auto expression = new std::istringstream(argv[1]);
+	expression = new std::istringstream(argv[1]);
 	try
 	{
 		std::cout << expr(expression) << std::endl;
