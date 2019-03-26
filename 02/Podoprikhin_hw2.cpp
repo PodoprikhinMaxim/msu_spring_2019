@@ -20,7 +20,7 @@ struct token
 	char operation;
 	int64_t number = 0;
 
-    token(token_value T_, char operation_ = 0, int64_t number_ = 0) : T(T_), operation(operation_), number(number_) {}
+    token(token_value T_ = END, char operation_ = 0, int64_t number_ = 0) : T(T_), operation(operation_), number(number_) {}
 };
 
 token curr_tok(std::istream* input)
