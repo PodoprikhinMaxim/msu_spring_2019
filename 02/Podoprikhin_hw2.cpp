@@ -16,7 +16,7 @@ enum token_value
 
 struct token 
 {      
-    token_value T;
+	token_value T;
 	char operation;
 	int64_t number = 0;
 
@@ -58,38 +58,37 @@ int64_t prim(std::istream* input)
 	else if(c.T == ERR)
 		throw std::invalid_argument("error");	 
 	else if(c.T == END)
-		throw std::logic_error("error");
+		throw std::invalid_argument("error");
 }
 
 int64_t term(std::istream* input) 
 {
-    int64_t res = prim(input);
-
-    while (true) 
+	int64_t res = prim(input);
+	while (true) 
 	{
-        token c = curr_tok(input);
-        switch(c.T) 
+		token c = curr_tok(input);
+		switch(c.T) 
 		{
-            case MUL:
-                res *= prim(input);
-                break;
-            case DIV:
+			case MUL:
+				res *= prim(input);
+				break;
+			case DIV:
 			{
-                int64_t d = prim(input);
-                if (d)
+				int64_t d = prim(input);
+				if (d)
 				{
-                    res /= d;
+					res /= d;
 					break;
 				}
-				throw std::runtime_error("error");
-            }
-            case ERR:
-                throw std::invalid_argument("error");
-            default:
-                input->putback(c.operation);
-                return res;
-        }
-    }
+				throw std::invalid_argument("error");
+			}
+			case ERR:
+				throw std::invalid_argument("error");
+			default:
+				input->putback(c.operation);
+				return res;
+		}
+	}
 }
 
 /*int64_t term(std::istream* input)
@@ -128,25 +127,24 @@ int64_t term(std::istream* input)
 
 int64_t expr(std::istream* input) 
 {
-    int64_t res = term(input);
-
-    while (true) 
+	int64_t res = term(input);
+	while (true) 
 	{
-        token c = curr_tok(input);
-        switch (c.T) 
+		token c = curr_tok(input);
+		switch (c.T) 
 		{
-            case ADD:
-                res += term(input);
-                break;
-            case SUB:
-                res -= term(input);
-                break;
-            case ERR:
-                throw std::invalid_argument("error");
-            default:
-                return res;
-        }
-    }
+		case ADD:
+			res += term(input);
+			break;
+		case SUB:
+			res -= term(input);
+			break;
+		case ERR:
+			throw std::invalid_argument("error");
+		default:
+			return res;
+		}
+	}
 }
 
 /*int64_t expr(std::istream* input)
@@ -184,18 +182,12 @@ int main(int argc, char* argv[])
 		std::cout << "error" << std::endl;
 		return 1;
 	}
-	auto text = new std::istringstream(argv[1]);
+	auto expression = new std::istringstream(argv[1]);
 	try
 	{
-		std::cout << expr(text) << std::endl;
+		std::cout << expr(expression) << std::endl;
 	}
-
-	catch (std::runtime_error& e)
-	{
-		std::cout << "error" << std::endl;
-		return 1;
-	}
-	catch  (std::logic_error& e)
+	catch (std::invalid_argument& err)
 	{
 		std::cout << "error" << std::endl;
 		return 1;
