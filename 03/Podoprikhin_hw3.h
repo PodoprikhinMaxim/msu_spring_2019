@@ -15,14 +15,9 @@ class Matrix
 				std::size_t len;
 				int* row;
 			public:
-				//friend class Matrix;
-				Row() : len(0) {}
+				//Row() : len(0) {}
 				Row(std::size_t n, int* row_) : len(n), row(row_) {}
-				/*~Row()
-				{
-					free(Row);
-				}*/
-				int &operator[](const std::size_t x)
+				int& operator[](const std::size_t x)
 				{
 					if(x < 0 || x >= len)
 					{
@@ -30,7 +25,7 @@ class Matrix
 					}
 					return row[x];
 				}
-				const int &operator[](const std::size_t x) const
+				const int operator[](const std::size_t x) const
 				{
 					if(x < 0 || x >= len)
 					{
@@ -47,7 +42,7 @@ class Matrix
 		}
 		~Matrix()
 		{
-			free(matrix);
+			delete[] matrix;
 		}
 		Row operator[](const std::size_t x)
 		{
@@ -73,7 +68,7 @@ class Matrix
 		{
 			return columns;
 		}
-		Matrix &operator*=(const int& a)
+		Matrix& operator*=(const int& a)
 		{
 			for(int i = 0; i < N; i++)
 			{
@@ -81,7 +76,7 @@ class Matrix
 			}
 			return *this;
 		}
-		bool operator==(const Matrix &B) const
+		bool operator==(const Matrix& B) const
 		{
 			if(columns != B.getColumns() || rows != B.getRows())
 			{
@@ -99,10 +94,11 @@ class Matrix
 			}
 			return true;
 		}
-		bool operator!=(const Matrix &B) const 
+		bool operator!=(const Matrix& B) const 
 		{
 			return !(this == &B);
 		}
 };
+
 
 #endif
