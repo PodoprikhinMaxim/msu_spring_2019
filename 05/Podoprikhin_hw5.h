@@ -60,7 +60,7 @@ private:
 	template <class T, class... ArgsT>
 	Error process(T&& t, ArgsT&&... args)
 	{
-		Error error = cout_(std::forward<T>(val));
+		Error error = cout_(std::forward<T>(t));
 		process(std::forward<ArgsT>(args)...);
 		return Error::NoError;		
 	}
