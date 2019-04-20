@@ -31,7 +31,7 @@ public:
 private:
 	std::ostream& out_;
 
-	Error cout_(bool& t)
+	Error toStream(bool t)
 	{
 		if (t == true)
 		{
@@ -44,7 +44,7 @@ private:
 		return Error::NoError;
 	}
 
-	Error cout_(uint64_t& t)
+	Error toStream(uint64_t t)
 	{
 		out_<<t<<Separator;
 		return Error::NoError;
@@ -53,14 +53,14 @@ private:
 	template <class T>
 	Error process(T&& t)
 	{
-		cout_(std::forward<T>(t));
+		toStream(std::forward<T>(t));
 		return Error::NoError;
 	}
 
 	template <class T, class... ArgsT>
 	Error process(T&& t, ArgsT&&... args)
 	{
-		Error error = cout_(std::forward<T>(t));
+		Error error = toStream(std::forward<T>(t));
 		process(std::forward<ArgsT>(args)...);
 		return Error::NoError;		
 	}
@@ -92,7 +92,7 @@ public:
 private:
     	std::istream& in_;
 	
-	Error cin_(bool& t)
+	Error fromStream(bool& t)
 	{
 		std::string str;
 		in_>>str;
@@ -109,7 +109,7 @@ private:
 		return Error::CorruptedArchive;
 	}
 
-	Error cin_(uint64_t& t)
+	Error fromStream(uint64_t& t)
 	{
 		std::string str;
 		uint64_t tmp = 0;
@@ -137,13 +137,13 @@ private:
 	template <class T>
 	Error process(T&& t)
 	{
-		return cin_(std::forward<T>(t));
+		return fromStream(std::forward<T>(t));
 	}
 
 	template <class T, class... ArgsT>
 	Error process(T&& t, ArgsT&&... args)
 	{
-		Error error = cin_(std::forward<T>(t));
+		Error error = fromStream(std::forward<T>(t));
 		if(error == Error::NoError)
 		{
 			return process(std::forward<ArgsT>(args)...);
