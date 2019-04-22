@@ -31,7 +31,27 @@ public:
 private:
 	std::ostream& out_;
 
-	Error toStream(bool t)
+	template <class T>
+	Error toStream(T t)
+	{
+		if(std::is_same<T, bool>::value)
+		{
+			if (t == true)
+			{
+				out_<<"true"<<Separator;
+			}
+			else if (t == false)
+			{
+				out_<<"false"<<Separator;
+			}
+		}
+		else if(std::is_same<T, uint64_t>::value)
+		{
+			out_<<t<<Separator;
+		}
+		return Error::NoError;
+	}
+	/*Error toStream(bool t)
 	{
 		if (t == true)
 		{
@@ -48,21 +68,26 @@ private:
 	{
 		out_<<t<<Separator;
 		return Error::NoError;
-	}
+	}*/
 
 	template <class T>
 	Error process(T&& t)
 	{
-		toStream(std::forward<T>(t));
-		return Error::NoError;
+		return toStream(std::forward<T>(t));
 	}
 
 	template <class T, class... ArgsT>
 	Error process(T&& t, ArgsT&&... args)
 	{
-		Error error = toStream(std::forward<T>(t));
-		process(std::forward<ArgsT>(args)...);
-		return Error::NoError;		
+		Error err = toStream(std::forward<T>(t));
+		if(err == Error::NoError)
+		{
+			return process(std::forward<ArgsT>(args)...);
+		}
+		else
+		{
+			return err;
+		}		
 	}
 };
 
@@ -92,7 +117,51 @@ public:
 private:
     	std::istream& in_;
 	
-	Error fromStream(bool& t)
+	template<class T>
+	Error fromStream(T& t)
+	{
+		if(std::is_same<T, bool>::value)
+		{
+			std::string str;
+			in_>>str;
+			if (str == "true")
+			{
+				t = true;
+				return Error::NoError;
+			}
+			else if (str == "false")
+			{
+				t = false;
+				return Error::NoError;
+			}	
+		}
+		else if(std::is_same<T, uint64_t>::value)
+		{
+			std::string str;
+			uint64_t tmp = 0;
+			in_>>str;
+			if (str.length() == 0)
+			{
+				return Error::CorruptedArchive;
+			}		
+			for (size_t i = 0; i < str.length(); i++)
+			{
+				if (!(isdigit(str[i])))
+				{
+					return Error::CorruptedArchive;
+				}
+				else
+				{
+					tmp = tmp * 10 + (str[i] - '0');
+				}
+			}
+			t = tmp;
+			return Error::NoError;	
+		}
+		return Error::CorruptedArchive;
+	}
+	
+	/*Error fromStream(bool& t)
 	{
 		std::string str;
 		in_>>str;
@@ -132,7 +201,7 @@ private:
 		}
 		t = tmp;
 		return Error::NoError;
-	}
+	}*/
 	
 	template <class T>
 	Error process(T&& t)
@@ -143,14 +212,14 @@ private:
 	template <class T, class... ArgsT>
 	Error process(T&& t, ArgsT&&... args)
 	{
-		Error error = fromStream(std::forward<T>(t));
-		if(error == Error::NoError)
+		Error err = fromStream(std::forward<T>(t));
+		if(err == Error::NoError)
 		{
 			return process(std::forward<ArgsT>(args)...);
 		}
 		else
 		{
-			return error;
+			return err;
 		}
 		
 	}
