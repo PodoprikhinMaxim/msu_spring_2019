@@ -30,8 +30,8 @@ void ping_pong(const std::string str, const bool p)
 
 int main(void) 
 {
-	std::thread thread1(ping_pong, "ping", 1);
-	std::thread thread2(ping_pong, "pong", 0);
+	std::thread thread1(ping_pong, "ping", true);
+	std::thread thread2(ping_pong, "pong", false);
 	thread1.join();
 	thread2.join();
 	return 0;
