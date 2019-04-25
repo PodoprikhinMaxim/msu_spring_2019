@@ -5,7 +5,7 @@
 
 std::mutex m;
 std::condition_variable ready;
-const int Stop = 5;
+const int Stop = 500000;
 bool pOP  = false;
 
 void ping_pong(const std::string str, const bool p) 
