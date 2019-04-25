@@ -5,44 +5,34 @@
 
 std::mutex m;
 std::condition_variable ready;
-bool check = false;
-const int Stop = 500000;
+const int Stop = 5;
+bool pOP  = false;
 
-void ping(const std::string& str) 
+void ping_pong(const std::string str, const bool p) 
 {
 	for (int i = 0; i < Stop; i++) 
 	{
+		//std::cout<<"kek "<<str<<'\n';
 		std::unique_lock<std::mutex> lock(m);
-		while(check) 
+		while(pOP == p) 
 		{
+			//std::cout<<"l\n";
 			ready.wait(lock);
 		}
-		std::cout << str << std::endl;
-		check = true;
+		std::cout << str << '\n';
+		pOP = p;
+		//std::cout<<"kek2 "<<p<<'\n';
 		ready.notify_one();
 	}
 }
 
-void pong(const std::string& str) 
-{
-	for (int i = 0; i < Stop; i++) 
-	{
-		std::unique_lock<std::mutex> lock(m);
-		while(!check) 
-		{
-			ready.wait(lock);
-		}
-		std::cout << str << std::endl;
-		check = false;
-		ready.notify_one();
-	}
-}
+
 
 int main(void) 
 {
-    std::thread ping_(ping, "ping");
-    std::thread pong_(pong, "pong");
-    ping_.join();
-    pong_.join();
-    return 0;
+	std::thread thread1(ping_pong, "ping", 1);
+	std::thread thread2(ping_pong, "pong", 0);
+	thread1.join();
+	thread2.join();
+	return 0;
 }
