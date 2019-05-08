@@ -1,3 +1,4 @@
+#include "convert.h"
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -7,8 +8,9 @@
 #include <algorithm>
 #include <sys/stat.h>
 
+
 using namespace std;
-int batch_size = 8;
+int batch_size = 900;
 
 void mymerge(vector<int>& vec, int start, int mid, int end)
 {
@@ -108,6 +110,7 @@ int batch_toF(string strF)
 int main()
 {
 	mkdir("tmp", S_IRUSR | S_IWUSR | S_IXUSR);
+	conv_bin_to_txt("numbers.dat", "numbers.txt", batch_size);
 	int num_off = batch_toF("numbers.txt");
 	if(num_off > 2)
 	{
@@ -129,8 +132,6 @@ int main()
 	{
 		mergeF("tmp/tmp0.txt", "tmp/tmp1.txt", "result.txt");
 	}
-
+	conv_txt_to_bin("result.bin", "result.txt", batch_size);
 	return 0;
 }
-
-
