@@ -76,12 +76,12 @@ int batch_toF(string strF)
 		else
 		{
 			ofstream fout;
-			string str = "tmp/tmp"+to_string(num_off)+".txt";
+			string str = "tmp/tmp" + to_string(num_off) + ".txt";
 			fout.open(str);
 			merge_sort(v, 0, v.size()-1);
 			for(int i = 0; i < v.size(); i++)
 			{
-				fout<<v[i]<<" ";	
+				fout << v[i] << " ";	
 			}
 			v.clear();
 			v.push_back(a);
@@ -91,12 +91,12 @@ int batch_toF(string strF)
 	if(v.size() != 0)
 	{
 		ofstream fout;
-		string str = "tmp/tmp"+to_string(num_off)+".txt";
+		string str = "tmp/tmp" + to_string(num_off) + ".txt";
 		fout.open(str);
 		merge_sort(v, 0, v.size()-1);
 		for(int i = 0; i < v.size(); i++)
 		{
-			fout<<v[i]<<" ";	
+			fout << v[i] << " ";	
 		}
 		v.clear();
 		v.push_back(a);
@@ -115,7 +115,7 @@ int main()
 	if(num_off > 2)
 	{
 		int i = 2;
-		mergeF("tmp/tmp0.txt", "tmp/tmp1.txt", "tmp/tmp"+ to_string(num_off) +".txt");
+		mergeF("tmp/tmp0.txt", "tmp/tmp1.txt", "tmp/tmp" + to_string(num_off) + ".txt");
 		for(i;i < num_off-1; i++)
 		{
 			mergeF("tmp/tmp" + to_string(i) + ".txt", 
@@ -132,6 +132,6 @@ int main()
 	{
 		mergeF("tmp/tmp0.txt", "tmp/tmp1.txt", "result.txt");
 	}
-	conv_txt_to_bin("result.bin", "result.txt", batch_size);
+	conv_txt_to_bin("result.txt", "result.bin", batch_size);
 	return 0;
 }

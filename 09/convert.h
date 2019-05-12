@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void conv_bin_to_txt(string file_bin,string file_txt,int batch_size)
+void conv_bin_to_txt(string file_bin, string file_txt, int batch_size)
 {
 	ifstream fin(file_bin, ios::binary);
 	ofstream fout(file_txt);
@@ -43,13 +43,13 @@ void conv_bin_to_txt(string file_bin,string file_txt,int batch_size)
 	}
 }
 
-void conv_txt_to_bin(string file_bin, string file_txt,int batch_size)
+void conv_txt_to_bin(string file_txt, string file_bin, int batch_size)
 {
 	ifstream fin(file_txt);
 	ofstream fout(file_bin, ios::binary);
 	if (!fout || !fin)
 	{
-				cout << "can not open file" << endl;
+		cout << "can not open file" << endl;
 	}
 	vector<uint64_t> v;
 	uint64_t val;
