@@ -1,4 +1,3 @@
-#include "convert.h"
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -10,7 +9,7 @@
 
 
 using namespace std;
-int batch_size = 900;
+const int batch_size = 900;
 
 void mymerge(vector<int>& vec, int start, int mid, int end)
 {
@@ -106,11 +105,41 @@ int batch_toF(string strF)
 	
 }
 
+void conv_bin_to_txt(string file_bin, string file_txt)
+{
+	ifstream fin(file_bin, ios::binary);
+	ofstream fout(file_txt);
+	if (!fout || !fin)
+	{
+		cout << "can not open file" << endl;
+	}
+	uint64_t val;
+	while(fin.read(reinterpret_cast<char *>(&val), sizeof(val)))
+	{	
+		fout << val << ' ';
+	}
+}
+
+void conv_txt_to_bin(string file_txt, string file_bin)
+{
+	ifstream fin(file_txt);
+	ofstream fout(file_bin, ios::binary);
+	if (!fout || !fin)
+	{
+		cout << "can not open file" << endl;
+	}
+	uint64_t val;
+	while(fin >> val)
+	{	
+		fout.write(reinterpret_cast<const char *>(&val), sizeof(uint64_t));
+	}
+}
+
 
 int main()
 {
 	mkdir("tmp", S_IRUSR | S_IWUSR | S_IXUSR);
-	conv_bin_to_txt("numbers.dat", "numbers.txt", batch_size);
+	conv_bin_to_txt("numbers.dat", "numbers.txt");
 	int num_off = batch_toF("numbers.txt");
 	if(num_off > 2)
 	{
@@ -132,6 +161,6 @@ int main()
 	{
 		mergeF("tmp/tmp0.txt", "tmp/tmp1.txt", "result.txt");
 	}
-	conv_txt_to_bin("result.txt", "result.bin", batch_size);
+	conv_txt_to_bin("result.txt", "result.bin");
 	return 0;
 }
