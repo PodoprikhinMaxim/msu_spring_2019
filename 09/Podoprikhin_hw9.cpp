@@ -9,12 +9,12 @@
 
 
 using namespace std;
-const int batch_size = 900;
+const int batch_size = 1000;
 
-void mymerge(vector<int>& vec, int start, int mid, int end)
+void mymerge(vector<uint64_t>& vec, int start, int mid, int end)
 {
-	vector<int> one (vec.begin() + start, vec.begin() + mid + 1);
-	vector<int> two (vec.begin() + mid + 1, vec.begin() + end + 1);
+	vector<uint64_t> one (vec.begin() + start, vec.begin() + mid + 1);
+	vector<uint64_t> two (vec.begin() + mid + 1, vec.begin() + end + 1);
 
 	int a = 0;
 	int b = 0;
@@ -32,7 +32,7 @@ void mymerge(vector<int>& vec, int start, int mid, int end)
 		vec[index ++] = two[b ++];
 }
 
-void merge_sort(vector<int>& vec, int start, int end)
+void merge_sort(vector<uint64_t>& vec, int start, int end)
 {
 	if (start >= end)
 		return;
@@ -47,26 +47,56 @@ void merge_sort(vector<int>& vec, int start, int end)
 }
 
 
-void mergeF(string inOne, string inTwo, string output) 
+void mergeF(const string input1, const string input2, const string output)
 {
-    ifstream inputOne(inOne);
-    ifstream inputTwo(inTwo);
-    ofstream mergeFile(output);
-    merge(istream_iterator<int>(inputOne),
-               istream_iterator<int>(),
-               istream_iterator<int>(inputTwo),
-               istream_iterator<int>(),
-               ostream_iterator<int>(mergeFile, " "));
+	uint64_t x, y;
+	int tmp;
+	ifstream f1(input1, ios::binary);
+	ifstream f2(input2, ios::binary);
+	ofstream f_res(output, ios::binary);
+
+	f1.read(reinterpret_cast<char*>(&x), sizeof(x));
+	f2.read(reinterpret_cast<char*>(&y), sizeof(y));
+
+	while(!f1.eof() && !f2.eof())
+	{
+		if(x > y)
+		{
+			f_res.write(reinterpret_cast<char*>(&y), sizeof(uint64_t));
+			f2.read(reinterpret_cast<char*>(&y), sizeof(uint64_t));
+		} 
+		else
+		{
+			f_res.write(reinterpret_cast<char*>(&x), sizeof(uint64_t));
+			f1.read(reinterpret_cast<char*>(&x), sizeof(uint64_t));
+		}
+	}
+	if(f1.eof())
+	{
+		while(!f2.eof())
+		{
+			f_res.write(reinterpret_cast<char*>(&y), sizeof(uint64_t));
+			f2.read(reinterpret_cast<char*>(&y), sizeof(uint64_t));
+		}
+	}
+	else
+	{
+		while(!f1.eof())
+		{
+			f_res.write(reinterpret_cast<char*>(&x), sizeof(uint64_t));
+			f1.read(reinterpret_cast<char*>(&x), sizeof(uint64_t));
+		}
+	}
 }
 
 int batch_toF(string strF)
 {
 	ifstream fin;
-	fin.open(strF);
-	vector<int> v;
-	int a;
+	fin.open(strF, ios::binary);
+	vector<uint64_t> v;
+	uint64_t a;
 	int num_off = 0;
-	while(fin >> a)
+	while(fin.read(reinterpret_cast<char *>(&a), sizeof(uint64_t)))
 	{	
 		if(v.size() < batch_size)
 		{
@@ -75,12 +105,12 @@ int batch_toF(string strF)
 		else
 		{
 			ofstream fout;
-			string str = "tmp/tmp" + to_string(num_off) + ".txt";
-			fout.open(str);
+			string str = "tmp/tmp" + to_string(num_off) + ".dat";
+			fout.open(str, ios::binary);
 			merge_sort(v, 0, v.size()-1);
 			for(int i = 0; i < v.size(); i++)
 			{
-				fout << v[i] << " ";	
+				fout.write(reinterpret_cast<char *>(&v[i]), sizeof(uint64_t));	
 			}
 			v.clear();
 			v.push_back(a);
@@ -90,12 +120,12 @@ int batch_toF(string strF)
 	if(v.size() != 0)
 	{
 		ofstream fout;
-		string str = "tmp/tmp" + to_string(num_off) + ".txt";
-		fout.open(str);
+		string str = "tmp/tmp" + to_string(num_off) + ".dat";
+		fout.open(str, ios::binary);
 		merge_sort(v, 0, v.size()-1);
 		for(int i = 0; i < v.size(); i++)
 		{
-			fout << v[i] << " ";	
+			fout.write(reinterpret_cast<char *>(&v[i]), sizeof(uint64_t));	
 		}
 		v.clear();
 		v.push_back(a);
@@ -105,62 +135,33 @@ int batch_toF(string strF)
 	
 }
 
-void conv_bin_to_txt(string file_bin, string file_txt)
-{
-	ifstream fin(file_bin, ios::binary);
-	ofstream fout(file_txt);
-	if (!fout || !fin)
-	{
-		cout << "can not open file" << endl;
-	}
-	uint64_t val;
-	while(fin.read(reinterpret_cast<char *>(&val), sizeof(val)))
-	{	
-		fout << val << ' ';
-	}
-}
-
-void conv_txt_to_bin(string file_txt, string file_bin)
-{
-	ifstream fin(file_txt);
-	ofstream fout(file_bin, ios::binary);
-	if (!fout || !fin)
-	{
-		cout << "can not open file" << endl;
-	}
-	uint64_t val;
-	while(fin >> val)
-	{	
-		fout.write(reinterpret_cast<const char *>(&val), sizeof(uint64_t));
-	}
-}
-
-
 int main()
 {
 	mkdir("tmp", S_IRUSR | S_IWUSR | S_IXUSR);
-	conv_bin_to_txt("numbers.dat", "numbers.txt");
-	int num_off = batch_toF("numbers.txt");
+	int num_off = batch_toF("numbers.dat");
 	if(num_off > 2)
 	{
 		int i = 2;
-		mergeF("tmp/tmp0.txt", "tmp/tmp1.txt", "tmp/tmp" + to_string(num_off) + ".txt");
+		mergeF("tmp/tmp0.dat", "tmp/tmp1.dat", "tmp/tmp" + to_string(num_off) + ".dat");
 		for(i;i < num_off-1; i++)
 		{
-			mergeF("tmp/tmp" + to_string(i) + ".txt", 
-				"tmp/tmp" + to_string(i + num_off - 2) + ".txt", 
-				"tmp/tmp"+ to_string(num_off - 1 + i) +".txt");
+			string str1 = "tmp/tmp" + to_string(i) + ".dat";
+			string str2 = "tmp/tmp" + to_string(i + num_off - 2) + ".dat";
+			string str3 = "tmp/tmp"+ to_string(num_off - 1 + i) +".dat";
+			cout << str1 << ' ' << str2 << ' ' << str3 << '\n';
+			mergeF("tmp/tmp" + to_string(i) + ".dat", 
+				"tmp/tmp" + to_string(i + num_off - 2) + ".dat", 
+				"tmp/tmp"+ to_string(num_off - 1 + i) +".dat");
 		
 		}
-		mergeF("tmp/tmp" + to_string(i) + ".txt", 
-			"tmp/tmp" + to_string(i + num_off - 2) + ".txt", 
-			"result.txt");
+		mergeF("tmp/tmp" + to_string(i) + ".dat", 
+			"tmp/tmp" + to_string(i + num_off - 2) + ".dat", 
+			"result.dat");
 		
 	}
 	else
 	{
-		mergeF("tmp/tmp0.txt", "tmp/tmp1.txt", "result.txt");
+		mergeF("tmp/tmp0.dat", "tmp/tmp1.dat", "result.dat");
 	}
-	conv_txt_to_bin("result.txt", "result.bin");
 	return 0;
 }
