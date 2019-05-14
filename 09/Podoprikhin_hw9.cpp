@@ -53,7 +53,11 @@ void mergeF(const string input1, const string input2, const string output)
 	ifstream f1(input1, ios::binary);
 	ifstream f2(input2, ios::binary);
 	ofstream f_res(output, ios::binary);
-
+	if (!f1 || !f2 || !f_res) 
+	{
+		cout << "Unable to open file"<<'\n';
+		return;
+	}
 	f1.read(reinterpret_cast<char*>(&x), sizeof(uint64_t));
 	f2.read(reinterpret_cast<char*>(&y), sizeof(uint64_t));
 
@@ -95,6 +99,11 @@ int batch_toF(string strF)
 	vector<uint64_t> v;
 	uint64_t a;
 	int num_off = 0;
+	if (!fin) 
+	{
+		cout << "Unable to open file"<<'\n';
+		return num_off;
+	}
 	while(fin.read(reinterpret_cast<char *>(&a), sizeof(uint64_t)))
 	{	
 		if(v.size() < batch_size)
@@ -127,7 +136,6 @@ int batch_toF(string strF)
 			fout.write(reinterpret_cast<char *>(&v[i]), sizeof(uint64_t));	
 		}
 		v.clear();
-		v.push_back(a);
 		num_off++;
 	}
 	return num_off;
@@ -138,6 +146,10 @@ int main()
 {
 	mkdir("tmp", S_IRUSR | S_IWUSR | S_IXUSR);
 	int num_off = batch_toF("numbers.dat");
+	if(num_off == 0)
+	{
+		cout<<"error"<<'\n';
+	}
 	if(num_off > 2)
 	{
 		int i = 2;
