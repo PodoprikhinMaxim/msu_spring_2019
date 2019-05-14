@@ -149,12 +149,13 @@ int main()
 	if(num_off == 0)
 	{
 		cout<<"error"<<'\n';
+		return -1;
 	}
 	if(num_off > 2)
 	{
 		int i = 2;
 		mergeF("tmp/tmp0.dat", "tmp/tmp1.dat", "tmp/tmp" + to_string(num_off) + ".dat");
-		for(i;i < num_off-1; i++)
+		for(i; i < num_off-1; i++)
 		{
 			mergeF("tmp/tmp" + to_string(i) + ".dat", 
 				"tmp/tmp" + to_string(i + num_off - 2) + ".dat", 
