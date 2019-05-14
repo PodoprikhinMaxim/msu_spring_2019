@@ -50,13 +50,12 @@ void merge_sort(vector<uint64_t>& vec, int start, int end)
 void mergeF(const string input1, const string input2, const string output)
 {
 	uint64_t x, y;
-	int tmp;
 	ifstream f1(input1, ios::binary);
 	ifstream f2(input2, ios::binary);
 	ofstream f_res(output, ios::binary);
 
-	f1.read(reinterpret_cast<char*>(&x), sizeof(x));
-	f2.read(reinterpret_cast<char*>(&y), sizeof(y));
+	f1.read(reinterpret_cast<char*>(&x), sizeof(uint64_t));
+	f2.read(reinterpret_cast<char*>(&y), sizeof(uint64_t));
 
 	while(!f1.eof() && !f2.eof())
 	{
@@ -145,10 +144,6 @@ int main()
 		mergeF("tmp/tmp0.dat", "tmp/tmp1.dat", "tmp/tmp" + to_string(num_off) + ".dat");
 		for(i;i < num_off-1; i++)
 		{
-			string str1 = "tmp/tmp" + to_string(i) + ".dat";
-			string str2 = "tmp/tmp" + to_string(i + num_off - 2) + ".dat";
-			string str3 = "tmp/tmp"+ to_string(num_off - 1 + i) +".dat";
-			cout << str1 << ' ' << str2 << ' ' << str3 << '\n';
 			mergeF("tmp/tmp" + to_string(i) + ".dat", 
 				"tmp/tmp" + to_string(i + num_off - 2) + ".dat", 
 				"tmp/tmp"+ to_string(num_off - 1 + i) +".dat");
